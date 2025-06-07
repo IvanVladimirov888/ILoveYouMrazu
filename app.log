@@ -575,3 +575,10 @@
 2025-06-07 23:58:00,392 - werkzeug - INFO - 127.0.0.1 - - [07/Jun/2025 23:58:00] "[32mGET / HTTP/1.1[0m" 302 -
 2025-06-07 23:58:00,619 - werkzeug - INFO - 127.0.0.1 - - [07/Jun/2025 23:58:00] "GET /user/dashboard HTTP/1.1" 200 -
 2025-06-07 23:58:00,941 - werkzeug - INFO - 127.0.0.1 - - [07/Jun/2025 23:58:00] "GET /user/dashboard HTTP/1.1" 200 -
+2025-06-08 01:02:48,457 - werkzeug - INFO - 127.0.0.1 - - [08/Jun/2025 01:02:48] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-08 01:02:48,481 - werkzeug - INFO - 127.0.0.1 - - [08/Jun/2025 01:02:48] "GET /login HTTP/1.1" 200 -
+2025-06-08 01:02:48,631 - werkzeug - INFO - 127.0.0.1 - - [08/Jun/2025 01:02:48] "GET /login HTTP/1.1" 200 -
+2025-06-08 01:02:53,739 - werkzeug - INFO - 127.0.0.1 - - [08/Jun/2025 01:02:53] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-08 01:02:53,748 - werkzeug - INFO - 127.0.0.1 - - [08/Jun/2025 01:02:53] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-08 01:02:53,756 - werkzeug - INFO - 127.0.0.1 - - [08/Jun/2025 01:02:53] "GET /admin/dashboard HTTP/1.1" 200 -
+2025-06-08 01:02:53,829 - werkzeug - INFO - 127.0.0.1 - - [08/Jun/2025 01:02:53] "GET /admin/dashboard HTTP/1.1" 200 -
