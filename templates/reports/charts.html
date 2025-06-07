@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Графики и отчеты{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Графики и отчеты</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('reports') }}">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="date_from">Дата от</label>
+                        <input type="date" class="form-control" id="date_from" name="date_from"
+                               value="{{ request.args.get('date_from', '') }}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="date_to">Дата до</label>
+                        <input type="date" class="form-control" id="date_to" name="date_to"
+                               value="{{ request.args.get('date_to', '') }}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="category_id">Категория</label>
+                        <select class="form-control" id="category_id" name="category_id">
+                            <option value="">Все категории</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}"
+                                    {% if request.args.get('category_id') == category.id|string %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="chart_type">Тип графика</label>
+                        <select class="form-control" id="chart_type" name="chart_type">
+                            <option value="materials" {% if request.args.get('chart_type') == 'materials' %}selected{% endif %}>
+                                Использование материалов
+                            </option>
+                            <option value="categories" {% if request.args.get('chart_type') == 'categories' %}selected{% endif %}>
+                                Доля категорий
+                            </option>
+                            <option value="requests" {% if request.args.get('chart_type') == 'requests' %}selected{% endif %}>
+                                Статистика по заявкам
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Применить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <canvas id="chartCanvas" height="300"></canvas>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-around mb-4">
+                        <a href="{{ url_for('export_report', report_type='pdf') }}?{{ request.query_string.decode() }}"
+                           class="btn btn-danger">
+                            <i class="fas fa-file-pdf"></i> Экспорт в PDF
+                        </a>
+                        <a href="{{ url_for('export_report', report_type='word') }}?{{ request.query_string.decode() }}"
+                           class="btn btn-primary">
+                            <i class="fas fa-file-word"></i> Экспорт в Word
+                        </a>
+                    </div>
+
+                    <h5>Статистика</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Всего заявок
+                            <span class="badge badge-primary badge-pill">{{ stats.total_requests }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Выполнено
+                            <span class="badge badge-success badge-pill">{{ stats.completed_requests }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Использовано материалов
+                            <span class="badge badge-info badge-pill">{{ stats.total_materials }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Использовано техники
+                            <span class="badge badge-warning badge-pill">{{ stats.total_equipment }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+<script>
+$(document).ready(function() {
+    const ctx = document.getElementById('chartCanvas').getContext('2d');
+
+    // Chart data from Flask template
+    const chartData = {
+        labels: {{ chart_labels|safe }},
+        datasets: [{
+            label: '{{ chart_title }}',
+            data: {{ chart_values|safe }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 159, 64, 0.7)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // Chart configuration
+    const chartConfig = {
+        type: '{{ chart_type }}',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    };
+
+    // Create chart
+    new Chart(ctx, chartConfig);
+});
+</script>
+{% endblock %}

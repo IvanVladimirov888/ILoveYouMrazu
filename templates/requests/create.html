@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Создать заявку{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Создать заявку</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('create_request') }}">
+                <div class="form-group">
+                    <label for="title">Название</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Описание</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="area">Площадь (м²)</label>
+                    <input type="number" step="0.01" class="form-control" id="area" name="area" min="0">
+                </div>
+
+                <h4 class="mt-4">Материалы</h4>
+                <div id="materials-section">
+                    <!-- Auto-added materials will appear here -->
+                    {% for material in auto_materials %}
+                    <div class="form-row mb-2">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" value="{{ material.name }}" readonly>
+                            <input type="hidden" name="material_id" value="{{ material.id }}">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="number" step="0.01" class="form-control" name="quantity"
+                                   value="1" min="0.01" required>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="form-control-plaintext">{{ material.unit }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2" data-toggle="modal" data-target="#addMaterialModal">
+                    <i class="fas fa-plus"></i> Добавить материал
+                </button>
+
+                <h4 class="mt-4">Техника</h4>
+                <div id="equipment-section">
+                    <!-- Added equipment will appear here -->
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2" data-toggle="modal" data-target="#addEquipmentModal">
+                    <i class="fas fa-plus"></i> Добавить технику
+                </button>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Создать заявку</button>
+                    <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Material Modal -->
+<div class="modal fade" id="addMaterialModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить материал</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="material-select">Материал</label>
+                    <select class="form-control" id="material-select">
+                        {% for material in available_materials %}
+                        <option value="{{ material.id }}"
+                                data-unit="{{ material.unit }}">{{ material.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="material-quantity">Количество</label>
+                    <input type="number" step="0.01" class="form-control" id="material-quantity" min="0.01" value="1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="add-material-btn">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Equipment Modal -->
+<div class="modal fade" id="addEquipmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить технику</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="equipment-select">Техника</label>
+                    <select class="form-control" id="equipment-select">
+                        {% for item in available_equipment %}
+                        <option value="{{ item.id }}">{{ item.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="add-equipment-btn">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Add material to the form
+    $('#add-material-btn').click(function() {
+        const materialId = $('#material-select').val();
+        const materialName = $('#material-select option:selected').text();
+        const quantity = $('#material-quantity').val();
+        const unit = $('#material-select option:selected').data('unit');
+
+        if (quantity > 0) {
+            const html = `
+            <div class="form-row mb-2">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" value="${materialName}" readonly>
+                    <input type="hidden" name="material_id" value="${materialId}">
+                </div>
+                <div class="col-md-4">
+                    <input type="number" step="0.01" class="form-control" name="quantity"
+                           value="${quantity}" min="0.01" required>
+                </div>
+                <div class="col-md-2">
+                    <span class="form-control-plaintext">${unit}</span>
+                </div>
+            </div>`;
+
+            $('#materials-section').append(html);
+            $('#addMaterialModal').modal('hide');
+        }
+    });
+
+    // Add equipment to the form
+    $('#add-equipment-btn').click(function() {
+        const equipmentId = $('#equipment-select').val();
+        const equipmentName = $('#equipment-select option:selected').text();
+
+        const html = `
+        <div class="form-row mb-2" id="equipment-${equipmentId}">
+            <div class="col-md-6">
+                <input type="text" class="form-control" value="${equipmentName}" readonly>
+                <input type="hidden" name="equipment_id" value="${equipmentId}">
+            </div>
+            <div class="col-md-4">
+                <input type="number" class="form-control" name="minutes_used"
+                       id="minutes-used-${equipmentId}" value="0" min="0" required>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-sm btn-outline-success start-timer"
+                        id="start-timer-${equipmentId}" data-equipment-id="${equipmentId}">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger stop-timer"
+                        id="stop-timer-${equipmentId}" data-equipment-id="${equipmentId}" style="display:none;">
+                    <i class="fas fa-stop"></i>
+                </button>
+            </div>
+        </div>`;
+
+        $('#equipment-section').append(html);
+        $('#addEquipmentModal').modal('hide');
+    });
+});
+</script>
+{% endblock %}

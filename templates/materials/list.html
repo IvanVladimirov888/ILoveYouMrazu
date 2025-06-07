@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Материалы</h2>
+
+    <!-- Search and Filter Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="form-inline">
+                <div class="form-group mr-3">
+                    <input type="text" name="search" class="form-control" placeholder="Поиск по названию"
+                           value="{{ search_query }}">
+                </div>
+                <div class="form-group mr-3">
+                    <select name="category" class="form-control">
+                        <option value="all">Все категории</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}"
+                                {% if selected_category == category.id|string %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Найти</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Materials Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Список материалов</h5>
+            <a href="{{ url_for('add_material') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Добавить материал
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Количество</th>
+                            <th>Мин. количество</th>
+                            <th>Единица</th>
+                            <th>Категория</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for material in materials %}
+                        <tr>
+                            <td>{{ material.name }}</td>
+                            <td class="{% if material.quantity <= material.min_quantity %}text-danger font-weight-bold{% endif %}">
+                                {{ material.quantity }}
+                            </td>
+                            <td>{{ material.min_quantity }}</td>
+                            <td>{{ material.unit }}</td>
+                            <td>{{ material.category_name or '-' }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_material', id=material.id) }}"
+                                   class="btn btn-sm btn-primary" title="Редактировать">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-sm btn-danger delete-material"
+                                        data-id="{{ material.id }}" title="Удалить">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">Материалы не найдены</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Delete material confirmation
+    $('.delete-material').click(function() {
+        const materialId = $(this).data('id');
+        if (confirm('Вы уверены, что хотите удалить этот материал?')) {
+            window.location.href = `/admin/materials/delete/${materialId}`;
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Импорт/Экспорт материалов{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Импорт/Экспорт материалов</h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Импорт из CSV</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('import_materials') }}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="csv_file">Выберите CSV файл</label>
+                            <input type="file" class="form-control-file" id="csv_file" name="csv_file" accept=".csv" required>
+                            <small class="form-text text-muted">
+                                Формат файла: Название;Количество;Единица измерения;Минимальное количество
+                            </small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Импортировать</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Экспорт в CSV</h5>
+                </div>
+                <div class="card-body">
+                    <p>Экспортировать все материалы в CSV файл</p>
+                    <a href="{{ url_for('export_materials') }}" class="btn btn-success">
+                        <i class="fas fa-download"></i> Экспортировать
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

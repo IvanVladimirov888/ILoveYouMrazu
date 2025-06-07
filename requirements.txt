@@ -1,0 +1,8 @@
+Flask==2.0.1
+Flask-MySQLdb==1.0.1
+mysql-connector-python==8.0.26
+python-dotenv==0.19.0
+python-docx==0.8.11
+werkzeug==2.0.1
+mysql~=0.0.3
+dotenv~=0.9.9

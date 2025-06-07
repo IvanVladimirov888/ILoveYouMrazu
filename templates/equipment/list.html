@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Техника{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Управление техникой</h2>
+        <a href="{{ url_for('add_equipment') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Добавить технику
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Всего использовано (мин)</th>
+                            <th>Интервал ТО (часы)</th>
+                            <th>Последнее ТО</th>
+                            <th>Следующее ТО</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in equipment %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.total_minutes_used }}</td>
+                            <td>{{ item.maintenance_interval }}</td>
+                            <td>
+                                {% if item.last_maintenance_date %}
+                                    {{ item.last_maintenance_date.strftime('%d.%m.%Y') }}
+                                {% else %}
+                                    Не проводилось
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.last_maintenance_date and item.maintenance_interval %}
+                                    {{ (item.last_maintenance_date + timedelta(hours=item.maintenance_interval)).strftime('%d.%m.%Y') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.is_active %}
+                                    <span class="badge badge-success">Активна</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">Неактивна</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('edit_equipment', id=item.id) }}"
+                                   class="btn btn-sm btn-primary" title="Редактировать">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ url_for('delete_equipment', id=item.id) }}" method="POST"
+                                      style="display: inline;" class="confirm-before-delete">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Удалить">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                <a href="{{ url_for('equipment_maintenance', id=item.id) }}"
+                                   class="btn btn-sm btn-info" title="Техническое обслуживание">
+                                    <i class="fas fa-tools"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">Техника не найдена</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

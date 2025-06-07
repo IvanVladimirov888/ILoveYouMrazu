@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Заявка #{{ request.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Заявка #{{ request.id }}</h2>
+        <div>
+            {% if session.role in ['admin'] and request.status == 'pending' %}
+                <a href="{{ url_for('approve_request', request_id=request.id) }}" class="btn btn-success">
+                    <i class="fas fa-check"></i> Одобрить
+                </a>
+                <a href="{{ url_for('reject_request', request_id=request.id) }}" class="btn btn-danger">
+                    <i class="fas fa-times"></i> Отклонить
+                </a>
+            {% endif %}
+            <a href="{{ url_for('export_request', request_id=request.id) }}" class="btn btn-primary">
+                <i class="fas fa-file-word"></i> Экспорт в Word
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ request.title }}</h5>
+            <h6 class="card-subtitle mb-3 text-muted">
+                Статус:
+                {% if request.status == 'pending' %}
+                    <span class="badge badge-warning">Ожидает</span>
+                {% elif request.status == 'approved' %}
+                    <span class="badge badge-success">Одобрено</span>
+                {% elif request.status == 'rejected' %}
+                    <span class="badge badge-danger">Отклонено</span>
+                {% elif request.status == 'completed' %}
+                    <span class="badge badge-info">Выполнено</span>
+                {% endif %}
+            </h6>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="card-text"><strong>Описание:</strong> {{ request.description }}</p>
+                    <p class="card-text"><strong>Площадь:</strong> {{ request.area }} м²</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="card-text"><strong>Создал:</strong> {{ request.user_name }}</p>
+                    <p class="card-text"><strong>Дата создания:</strong> {{ request.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                    {% if request.completed_at %}
+                    <p class="card-text"><strong>Дата завершения:</strong> {{ request.completed_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Материалы</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Количество</th>
+                                    <th>Единица</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for material in materials %}
+                                <tr>
+                                    <td>{{ material.name }}</td>
+                                    <td>{{ material.quantity }}</td>
+                                    <td>{{ material.unit }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center">Материалы не указаны</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Техника</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Время использования (мин)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in equipment %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.minutes_used }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Техника не указана</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if request.status == 'approved' and request.user_id == session.user_id %}
+                    <form method="POST" action="{{ url_for('complete_request', request_id=request.id) }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-flag-checkered"></i> Завершить заявку
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

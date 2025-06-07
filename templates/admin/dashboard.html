@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Панель администратора{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Панель администратора</h2>
+        <p>Добро пожаловать, {{ session.full_name }}!</p>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="/admin/materials" class="btn btn-primary w-100">
+                            <i class="fas fa-boxes"></i> Управление материалами
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/admin/users" class="btn btn-success w-100">
+                            <i class="fas fa-users"></i> Управление пользователями
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/admin/requests" class="btn btn-info w-100">
+                            <i class="fas fa-list"></i> Просмотр заявок
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/admin/reports" class="btn btn-warning w-100">
+                            <i class="fas fa-chart-bar"></i> Отчеты
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

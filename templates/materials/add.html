@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить материал{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Добавить материал</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('add_material') }}">
+                <div class="form-group">
+                    <label for="name">Название</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Количество</label>
+                    <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="unit">Единица измерения</label>
+                    <select class="form-control" id="unit" name="unit" required>
+                        <option value="шт">шт</option>
+                        <option value="литры">литры</option>
+                        <option value="кг">кг</option>
+                        <option value="пары">пары</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="min_quantity">Минимальное количество</label>
+                    <input type="number" step="0.01" class="form-control" id="min_quantity" name="min_quantity" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category_id">Категория</label>
+                    <select class="form-control" id="category_id" name="category_id">
+                        <option value="">-- Без категории --</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="price_per_unit">Цена за единицу</label>
+                    <input type="number" step="0.01" class="form-control" id="price_per_unit" name="price_per_unit" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="supplier_id">Поставщик</label>
+                    <select class="form-control" id="supplier_id" name="supplier_id">
+                        <option value="">-- Без поставщика --</option>
+                        {% for supplier in suppliers %}
+                        <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="expiration_date">Срок годности</label>
+                    <input type="date" class="form-control" id="expiration_date" name="expiration_date">
+                </div>
+
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="auto_add_to_request" name="auto_add_to_request">
+                    <label class="form-check-label" for="auto_add_to_request">Автоматически добавлять в новые заявки</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Добавить</button>
+                <a href="{{ url_for('admin_materials') }}" class="btn btn-secondary">Отмена</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
