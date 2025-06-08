@@ -133,18 +133,18 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th width="60">Номер</th>
                             <th>Пользователь</th>
                             <th>Название</th>
-                            <th>Статус</th>
-                            <th>Дата</th>
-                            <th>Действия</th>
+                            <th width="120">Статус</th>
+                            <th width="100">Дата</th>
+                            <th width="80">Действия</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for req in admin_stats.recent_requests %}
                         <tr>
-                            <td>#{{ req.id }}</td>
+                            <td>{{ loop.index }}</td>
                             <td>{{ req.user_name }}</td>
                             <td>{{ req.title }}</td>
                             <td>
@@ -244,17 +244,17 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th width="60">Номер</th>
                             <th>Название</th>
-                            <th>Статус</th>
-                            <th>Дата</th>
-                            <th>Действия</th>
+                            <th width="120">Статус</th>
+                            <th width="100">Дата</th>
+                            <th width="80">Действия</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for req in user_requests %}
                         <tr>
-                            <td>#{{ req.id }}</td>
+                            <td>{{ loop.index }}</td>
                             <td>{{ req.title }}</td>
                             <td>
                                 {% if req.status == 'pending' %}
@@ -285,6 +285,7 @@
             </div>
         </div>
     </div>
+
     {% endif %}
 </div>
 {% endblock %}
