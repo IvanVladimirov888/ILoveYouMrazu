@@ -4,38 +4,185 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Alik Cleaning{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Навигационная панель -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">Alik Cleaning</a>
-            <div class="navbar-nav">
-                {% if session.user_id %}
-                    <a class="nav-link" href="/logout">Выйти</a>
-                {% else %}
-                    <a class="nav-link" href="/login">Вход</a>
-                    <a class="nav-link" href="/register">Регистрация</a>
-                {% endif %}
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="fas fa-broom"></i> Alik Cleaning
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if session.user_id %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('dashboard') }}">
+                                <i class="fas fa-home"></i> Главная
+                            </a>
+                        </li>
+
+                        <!-- Общие пункты для всех авторизованных -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('materials_list') }}">
+                                <i class="fas fa-boxes"></i> Материалы
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('requests_list') }}">
+                                <i class="fas fa-clipboard-list"></i> Заявки
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('equipment_list') }}">
+                                <i class="fas fa-tools"></i> Техника
+                            </a>
+                        </li>
+
+                        <!-- Только для админа -->
+                        {% if session.role == 'admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('reports') }}">
+                                <i class="fas fa-chart-bar"></i> Отчеты
+                            </a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-cog"></i> Администрирование
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_users') }}">
+                                        <i class="fas fa-users"></i> Пользователи
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_suppliers') }}">
+                                        <i class="fas fa-truck"></i> Поставщики
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('manage_categories') }}">
+                                        <i class="fas fa-tags"></i> Категории
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('import_materials') }}">
+                                        <i class="fas fa-file-import"></i> Импорт/Экспорт
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+
+                <!-- ПРАВАЯ ЧАСТЬ НАВИГАЦИИ - ПАНЕЛЬ ПОЛЬЗОВАТЕЛЯ -->
+                <ul class="navbar-nav">
+                    {% if session.user_id %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> {{ session.full_name }}
+                                {% if session.role == 'admin' %}
+                                    <span class="badge bg-danger ms-1">Админ</span>
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <h6 class="dropdown-header">
+                                        <i class="fas fa-user"></i> {{ session.username }}
+                                    </h6>
+                                </li>
+                                <li>
+                                    <span class="dropdown-item-text text-muted">
+                                        Роль: {% if session.role == 'admin' %}Администратор{% else %}Сотрудник{% endif %}
+                                    </span>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('dashboard') }}">
+                                        <i class="fas fa-tachometer-alt"></i> Моя панель
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-sign-out-alt"></i> Выйти
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt"></i> Вход
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus"></i> Регистрация
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+    <!-- Хлебные крошки (если нужны) -->
+    {% block breadcrumb %}{% endblock %}
 
-        {% block content %}{% endblock %}
-    </div>
+    <!-- Основной контент -->
+    <main class="py-4">
+        <div class="container">
+            <!-- Flash сообщения -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
+            <!-- Контент страницы -->
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="bg-light text-center text-lg-start mt-5">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2025 Alik Cleaning. Все права защищены.
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

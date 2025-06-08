@@ -9,57 +9,98 @@
     <div class="card">
         <div class="card-body">
             <form method="POST" action="{{ url_for('create_request') }}">
-                <div class="form-group">
+                {% if session.role == 'admin' %}
+                <div class="form-group mb-3">
+                    <label for="user_id">Пользователь</label>
+                    <select class="form-control" id="user_id" name="user_id" required>
+                        <option value="{{ session.user_id }}" selected>Для себя</option>
+                        {% for user in users %}
+                            {% if user.id != session.user_id %}
+                            <option value="{{ user.id }}">{{ user.full_name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <small class="form-text text-muted">Выберите, для кого создается заявка</small>
+                </div>
+                {% endif %}
+
+                <div class="form-group mb-3">
                     <label for="title">Название</label>
                     <input type="text" class="form-control" id="title" name="title" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label for="description">Описание</label>
                     <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label for="area">Площадь (м²)</label>
                     <input type="number" step="0.01" class="form-control" id="area" name="area" min="0">
                 </div>
 
                 <h4 class="mt-4">Материалы</h4>
-                <div id="materials-section">
-                    <!-- Auto-added materials will appear here -->
-                    {% for material in auto_materials %}
-                    <div class="form-row mb-2">
-                        <div class="col-md-6">
-                            <input type="text" class="form-control" value="{{ material.name }}" readonly>
-                            <input type="hidden" name="material_id" value="{{ material.id }}">
-                        </div>
-                        <div class="col-md-4">
-                            <input type="number" step="0.01" class="form-control" name="quantity"
-                                   value="1" min="0.01" required>
-                        </div>
-                        <div class="col-md-2">
-                            <span class="form-control-plaintext">{{ material.unit }}</span>
-                        </div>
-                    </div>
-                    {% endfor %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th width="150">Количество</th>
+                                <th width="100">Единица</th>
+                                <th width="50"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="materials-section">
+                            <!-- Auto-added materials -->
+                            {% for material in auto_materials %}
+                            <tr>
+                                <td>
+                                    {{ material.name }}
+                                    <input type="hidden" name="material_id" value="{{ material.id }}">
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control form-control-sm"
+                                           name="quantity" value="1" min="0.01" required>
+                                </td>
+                                <td>{{ material.unit }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger remove-item">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
-                <button type="button" class="btn btn-sm btn-outline-primary mt-2" data-toggle="modal" data-target="#addMaterialModal">
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
                     <i class="fas fa-plus"></i> Добавить материал
                 </button>
 
                 <h4 class="mt-4">Техника</h4>
-                <div id="equipment-section">
-                    <!-- Added equipment will appear here -->
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th width="200">Время использования (мин)</th>
+                                <th width="50"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="equipment-section">
+                            <!-- Added equipment will appear here -->
+                        </tbody>
+                    </table>
                 </div>
 
-                <button type="button" class="btn btn-sm btn-outline-primary mt-2" data-toggle="modal" data-target="#addEquipmentModal">
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addEquipmentModal">
                     <i class="fas fa-plus"></i> Добавить технику
                 </button>
 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary">Создать заявку</button>
-                    <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">Отмена</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Отмена</a>
                 </div>
             </form>
         </div>
@@ -72,12 +113,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Добавить материал</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label for="material-select">Материал</label>
                     <select class="form-control" id="material-select">
                         {% for material in available_materials %}
@@ -92,7 +131,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                 <button type="button" class="btn btn-primary" id="add-material-btn">Добавить</button>
             </div>
         </div>
@@ -105,9 +144,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Добавить технику</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -120,7 +157,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                 <button type="button" class="btn btn-primary" id="add-equipment-btn">Добавить</button>
             </div>
         </div>
@@ -140,22 +177,26 @@ $(document).ready(function() {
 
         if (quantity > 0) {
             const html = `
-            <div class="form-row mb-2">
-                <div class="col-md-6">
-                    <input type="text" class="form-control" value="${materialName}" readonly>
+            <tr>
+                <td>
+                    ${materialName}
                     <input type="hidden" name="material_id" value="${materialId}">
-                </div>
-                <div class="col-md-4">
-                    <input type="number" step="0.01" class="form-control" name="quantity"
-                           value="${quantity}" min="0.01" required>
-                </div>
-                <div class="col-md-2">
-                    <span class="form-control-plaintext">${unit}</span>
-                </div>
-            </div>`;
+                </td>
+                <td>
+                    <input type="number" step="0.01" class="form-control form-control-sm"
+                           name="quantity" value="${quantity}" min="0.01" required>
+                </td>
+                <td>${unit}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger remove-item">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            </tr>`;
 
             $('#materials-section').append(html);
             $('#addMaterialModal').modal('hide');
+            $('#material-quantity').val('1');
         }
     });
 
@@ -165,29 +206,29 @@ $(document).ready(function() {
         const equipmentName = $('#equipment-select option:selected').text();
 
         const html = `
-        <div class="form-row mb-2" id="equipment-${equipmentId}">
-            <div class="col-md-6">
-                <input type="text" class="form-control" value="${equipmentName}" readonly>
+        <tr>
+            <td>
+                ${equipmentName}
                 <input type="hidden" name="equipment_id" value="${equipmentId}">
-            </div>
-            <div class="col-md-4">
-                <input type="number" class="form-control" name="minutes_used"
-                       id="minutes-used-${equipmentId}" value="0" min="0" required>
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-sm btn-outline-success start-timer"
-                        id="start-timer-${equipmentId}" data-equipment-id="${equipmentId}">
-                    <i class="fas fa-play"></i>
+            </td>
+            <td>
+                <input type="number" class="form-control form-control-sm"
+                       name="minutes_used" value="0" min="0" required>
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger remove-item">
+                    <i class="fas fa-times"></i>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline-danger stop-timer"
-                        id="stop-timer-${equipmentId}" data-equipment-id="${equipmentId}" style="display:none;">
-                    <i class="fas fa-stop"></i>
-                </button>
-            </div>
-        </div>`;
+            </td>
+        </tr>`;
 
         $('#equipment-section').append(html);
         $('#addEquipmentModal').modal('hide');
+    });
+
+    // Remove item from list
+    $(document).on('click', '.remove-item', function() {
+        $(this).closest('tr').remove();
     });
 });
 </script>

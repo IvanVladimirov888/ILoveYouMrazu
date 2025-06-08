@@ -6,9 +6,11 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Управление техникой</h2>
+        {% if session.role == 'admin' %}
         <a href="{{ url_for('add_equipment') }}" class="btn btn-success">
             <i class="fas fa-plus"></i> Добавить технику
         </a>
+        {% endif %}
     </div>
 
     <div class="card">
@@ -23,7 +25,9 @@
                             <th>Последнее ТО</th>
                             <th>Следующее ТО</th>
                             <th>Статус</th>
+                            {% if session.role == 'admin' %}
                             <th>Действия</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -31,7 +35,7 @@
                         <tr>
                             <td>{{ item.name }}</td>
                             <td>{{ item.total_minutes_used }}</td>
-                            <td>{{ item.maintenance_interval }}</td>
+                            <td>{{ item.maintenance_interval or '-' }}</td>
                             <td>
                                 {% if item.last_maintenance_date %}
                                     {{ item.last_maintenance_date.strftime('%d.%m.%Y') }}
@@ -41,18 +45,20 @@
                             </td>
                             <td>
                                 {% if item.last_maintenance_date and item.maintenance_interval %}
-                                    {{ (item.last_maintenance_date + timedelta(hours=item.maintenance_interval)).strftime('%d.%m.%Y') }}
+                                    {% set next_date = item.last_maintenance_date + timedelta(hours=item.maintenance_interval) %}
+                                    {{ next_date.strftime('%d.%m.%Y') }}
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                             <td>
                                 {% if item.is_active %}
-                                    <span class="badge badge-success">Активна</span>
+                                    <span class="badge bg-success">Активна</span>
                                 {% else %}
-                                    <span class="badge badge-secondary">Неактивна</span>
+                                    <span class="badge bg-secondary">Неактивна</span>
                                 {% endif %}
                             </td>
+                            {% if session.role == 'admin' %}
                             <td>
                                 <a href="{{ url_for('edit_equipment', id=item.id) }}"
                                    class="btn btn-sm btn-primary" title="Редактировать">
@@ -69,10 +75,13 @@
                                     <i class="fas fa-tools"></i>
                                 </a>
                             </td>
+                            {% endif %}
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="7" class="text-center">Техника не найдена</td>
+                            <td colspan="{% if session.role == 'admin' %}7{% else %}6{% endif %}" class="text-center">
+                                Техника не найдена
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

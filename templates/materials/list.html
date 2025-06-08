@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Материалы{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h2>Материалы</h2>
@@ -32,9 +34,11 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Список материалов</h5>
+            {% if session.role == 'admin' %}
             <a href="{{ url_for('add_material') }}" class="btn btn-success">
                 <i class="fas fa-plus"></i> Добавить материал
             </a>
+            {% endif %}
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -46,7 +50,9 @@
                             <th>Мин. количество</th>
                             <th>Единица</th>
                             <th>Категория</th>
+                            {% if session.role == 'admin' %}
                             <th>Действия</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -59,6 +65,7 @@
                             <td>{{ material.min_quantity }}</td>
                             <td>{{ material.unit }}</td>
                             <td>{{ material.category_name or '-' }}</td>
+                            {% if session.role == 'admin' %}
                             <td>
                                 <a href="{{ url_for('edit_material', id=material.id) }}"
                                    class="btn btn-sm btn-primary" title="Редактировать">
@@ -69,10 +76,11 @@
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
+                            {% endif %}
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="6" class="text-center">Материалы не найдены</td>
+                            <td colspan="{% if session.role == 'admin' %}6{% else %}5{% endif %}" class="text-center">Материалы не найдены</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -83,7 +91,7 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
 $(document).ready(function() {
     // Delete material confirmation

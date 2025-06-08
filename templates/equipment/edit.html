@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать технику{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Редактировать технику</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('edit_equipment', id=equipment.id) }}">
+                <div class="form-group">
+                    <label for="name">Название</label>
+                    <input type="text" class="form-control" id="name" name="name"
+                           value="{{ equipment.name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="maintenance_interval">Интервал ТО (часы)</label>
+                    <input type="number" class="form-control" id="maintenance_interval"
+                           name="maintenance_interval" min="0"
+                           value="{{ equipment.maintenance_interval }}">
+                    <small class="form-text text-muted">
+                        Укажите через сколько часов использования нужно проводить техническое обслуживание
+                    </small>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="is_active"
+                           name="is_active" {% if equipment.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="is_active">Активна</label>
+                </div>
+
+                <div class="form-group">
+                    <label>Информация об использовании:</label>
+                    <ul class="list-unstyled">
+                        <li>Всего использовано: <strong>{{ equipment.total_minutes_used }} мин</strong></li>
+                        <li>Последнее ТО:
+                            <strong>
+                                {% if equipment.last_maintenance_date %}
+                                    {{ equipment.last_maintenance_date.strftime('%d.%m.%Y') }}
+                                {% else %}
+                                    Не проводилось
+                                {% endif %}
+                            </strong>
+                        </li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <a href="{{ url_for('equipment_list') }}" class="btn btn-secondary">Отмена</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

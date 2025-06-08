@@ -3,12 +3,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
 
+    // Enable tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
     // Confirm before delete actions
     $('.confirm-before-delete').on('click', function(e) {
         if (!confirm('Вы уверены, что хотите выполнить это действие?')) {
             e.preventDefault();
         }
     });
+
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
 
     // Chemical calculation form
     $('#chemical-calculation-form').on('submit', function(e) {

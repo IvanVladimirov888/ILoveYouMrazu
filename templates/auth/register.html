@@ -10,22 +10,39 @@
                 <h4 class="mb-0">Регистрация</h4>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ url_for('register') }}">
+                <form method="POST" action="{{ url_for('register') }}" id="registerForm">
                     <div class="mb-3">
                         <label for="full_name" class="form-label">ФИО</label>
-                        <input type="text" class="form-control" id="full_name" name="full_name" required>
+                        <input type="text" class="form-control" id="full_name" name="full_name"
+                               pattern="^[А-Яа-яЁё\s\-]+$"
+                               title="ФИО должно содержать только буквы, пробелы и дефисы"
+                               required>
+                        <small class="form-text text-muted">Только буквы кириллицы</small>
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">Телефон</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                        <input type="tel" class="form-control" id="phone" name="phone"
+                               pattern="^(\+7|8)?[0-9]{10}$"
+                               title="Формат: +7XXXXXXXXXX или 8XXXXXXXXXX или XXXXXXXXXX (10 цифр)"
+                               maxlength="12"
+                               required>
+                        <small class="form-text text-muted">Формат: +79123456789 или 89123456789</small>
                     </div>
                     <div class="mb-3">
                         <label for="username" class="form-label">Имя пользователя</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                        <input type="text" class="form-control" id="username" name="username"
+                               pattern="^[a-zA-Z0-9_]{3,20}$"
+                               title="От 3 до 20 символов. Только латинские буквы, цифры и подчеркивание"
+                               required>
+                        <small class="form-text text-muted">Латинские буквы, цифры, подчеркивание (3-20 символов)</small>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Пароль</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="password" class="form-control" id="password" name="password"
+                               minlength="6"
+                               title="Минимум 6 символов"
+                               required>
+                        <small class="form-text text-muted">Минимум 6 символов</small>
                     </div>
                     <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
                 </form>
@@ -33,4 +50,38 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const phone = document.getElementById('phone').value;
+    const fullName = document.getElementById('full_name').value;
+
+    // Дополнительная валидация телефона
+    const phoneRegex = /^(\+7|8)?[0-9]{10}$/;
+    if (!phoneRegex.test(phone)) {
+        e.preventDefault();
+        alert('Неверный формат телефона! Используйте формат +79123456789 или 89123456789');
+        return false;
+    }
+
+    // Дополнительная валидация ФИО
+    const nameRegex = /^[А-Яа-яЁё\s\-]+$/;
+    if (!nameRegex.test(fullName)) {
+        e.preventDefault();
+        alert('ФИО должно содержать только русские буквы, пробелы и дефисы!');
+        return false;
+    }
+});
+
+// Автоформатирование телефона
+document.getElementById('phone').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 0 && value[0] === '7') {
+        value = '+' + value;
+    }
+    e.target.value = value;
+});
+</script>
 {% endblock %}

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Управление поставщиками{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Управление поставщиками</h2>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
+            <i class="fas fa-plus"></i> Добавить поставщика
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Название</th>
+                            <th>Контактная информация</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for supplier in suppliers %}
+                        <tr>
+                            <td>{{ supplier.id }}</td>
+                            <td>{{ supplier.name }}</td>
+                            <td>{{ supplier.contact_info }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary edit-supplier"
+                                        data-id="{{ supplier.id }}"
+                                        data-name="{{ supplier.name }}"
+                                        data-contact="{{ supplier.contact_info }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form action="{{ url_for('delete_supplier', id=supplier.id) }}"
+                                      method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger confirm-before-delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">Поставщики не найдены</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для добавления поставщика -->
+<div class="modal fade" id="addSupplierModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_supplier') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить поставщика</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Название</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact_info" class="form-label">Контактная информация</label>
+                        <textarea class="form-control" id="contact_info" name="contact_info" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для редактирования поставщика -->
+<div class="modal fade" id="editSupplierModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="editSupplierForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редактировать поставщика</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_name" class="form-label">Название</label>
+                        <input type="text" class="form-control" id="edit_name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_contact_info" class="form-label">Контактная информация</label>
+                        <textarea class="form-control" id="edit_contact_info" name="contact_info" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('.edit-supplier').click(function() {
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        const contact = $(this).data('contact');
+
+        $('#edit_name').val(name);
+        $('#edit_contact_info').val(contact);
+        $('#editSupplierForm').attr('action', `/admin/suppliers/${id}/edit`);
+
+        $('#editSupplierModal').modal('show');
+    });
+});
+</script>
+{% endblock %}
