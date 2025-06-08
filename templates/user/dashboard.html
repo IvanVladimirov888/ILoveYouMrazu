@@ -30,59 +30,62 @@
     </div>
     {% endif %}
 
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Последние заявки</h5>
-            <a href="{{ url_for('create_request') }}" class="btn btn-sm btn-success">
-                <i class="fas fa-plus"></i> Новая заявка
-            </a>
-        </div>
-        <div class="card-body">
-            {% if requests %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Название</th>
-                            <th>Статус</th>
-                            <th>Дата</th>
-                            <th>Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for req in requests %}
-                        <tr>
-                            <td>{{ req.id }}</td>
-                            <td>{{ req.title }}</td>
-                            <td>
-                                {% if req.status == 'pending' %}
-                                    <span class="badge bg-warning">На рассмотрении</span>
-                                {% elif req.status == 'approved' %}
-                                    <span class="badge bg-success">Одобрено</span>
-                                {% elif req.status == 'rejected' %}
-                                    <span class="badge bg-danger">Отклонено</span>
-                                {% elif req.status == 'completed' %}
-                                    <span class="badge bg-info">Завершено</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ req.created_at.strftime('%d.%m.%Y') }}</td>
-                            <td>
-                                <a href="{{ url_for('view_request', request_id=req.id) }}"
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <p class="text-muted">У вас пока нет заявок</p>
-            {% endif %}
+    <div class="card mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-list"></i> Последние заявки в системе</h5>
+        <a href="{{ url_for('requests_list') }}" class="btn btn-sm btn-primary">
+            Все заявки
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th width="60">Номер</th>
+                        <th>Пользователь</th>
+                        <th>Название</th>
+                        <th width="120">Статус</th>
+                        <th width="100">Дата</th>
+                        <th width="80">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in admin_stats.recent_requests %}
+                    <tr>
+                        <td>{{ req.id }}</td>
+                        <td>{{ req.user_name }}</td>
+                        <td>{{ req.title }}</td>
+                        <td>
+                            {% if req.status == 'pending' %}
+                                <span class="badge bg-warning">На рассмотрении</span>
+                            {% elif req.status == 'approved' %}
+                                <span class="badge bg-success">Одобрено</span>
+                            {% elif req.status == 'rejected' %}
+                                <span class="badge bg-danger">Отклонено</span>
+                            {% elif req.status == 'completed' %}
+                                <span class="badge bg-info">Завершено</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ req.created_at.strftime('%d.%m.%Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('view_request', request_id=req.id) }}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">Заявок пока нет</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
+
 
     {% if is_admin %}
     <div class="mt-4">

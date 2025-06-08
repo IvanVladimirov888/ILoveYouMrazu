@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Заявка #{{ request.id }}{% endblock %}
+{% block title %}Заявка №{{ request.id }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Заявка #{{ request.id }}</h2>
+        <h2>Заявка №{{ request.id }}</h2>
         <div>
             {% if session.role in ['admin'] and request.status == 'pending' %}
                 <a href="{{ url_for('approve_request', request_id=request.id) }}" class="btn btn-success">

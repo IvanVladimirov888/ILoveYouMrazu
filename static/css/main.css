@@ -139,17 +139,6 @@ footer {
     margin-top: auto;
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-
-    .navbar-nav {
-        text-align: center;
-    }
-}
-
 /* Equal height cards */
 .card.h-100 {
     transition: transform 0.2s;
@@ -181,8 +170,73 @@ footer {
     opacity: 1;
 }
 
+/* Action buttons in tables - ОБНОВЛЕННЫЕ СТИЛИ */
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+}
+
+.action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1;
+    border-radius: 0.2rem;
+    flex-shrink: 0;
+}
+
+.action-buttons .btn i {
+    font-size: 0.875rem;
+}
+
+.action-buttons form {
+    margin: 0;
+    display: inline-block;
+}
+
+/* Убираем стили btn-group */
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Table responsiveness */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text wrap in action column */
+td.text-nowrap {
+    white-space: nowrap;
+}
+
 /* Responsive adjustments */
+@media (max-width: 992px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .action-buttons .btn {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .action-buttons .btn i {
+        font-size: 0.75rem;
+    }
+}
+
 @media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .navbar-nav {
+        text-align: center;
+    }
+
     .card-body.d-flex {
         min-height: 200px;
     }
