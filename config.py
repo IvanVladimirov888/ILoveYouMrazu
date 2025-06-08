@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-
+#БД
 load_dotenv()
 
 class Config:
@@ -10,7 +10,7 @@ DB_CONFIG = {
     'host': os.getenv('DB_HOST') or 'localhost',
     'database': os.getenv('DB_NAME') or 'Alik',
     'user': os.getenv('DB_USER') or 'root',
-    'password': os.getenv('DB_PASSWORD') or 'Ivan_Vladimirov_888',
+    'password': os.getenv('DB_PASSWORD') or 'Seda2005',
     'port': os.getenv('DB_PORT') or 3306,
     'auth_plugin': 'mysql_native_password'
 }
