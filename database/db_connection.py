@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 from config import DB_CONFIG
-
+#qweeqweqe
 def get_db_connection():
     """Возвращает соединение с базой данных"""
     try:
